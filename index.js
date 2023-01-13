@@ -5,6 +5,7 @@ cnv.width = 640;
 cnv.height = 480;
 
 let keyImg = document.getElementById("keyImg");
+let sequenceNum = 0;
 class Key {
     constructor(x, y, pos) {
         this.x = x;
@@ -25,29 +26,95 @@ for (let i = 0; i < 8; i++) {
 window.addEventListener("load", draw)
 function draw() {
     ctx.fillRect(0, 0, cnv.width, cnv.height);
-    // rotateAll();
     for (let i = 0; i < 8; i++) {
         ctx.drawImage(keyImg, keys[i].x, keys[i].y)
     }
-    quadrantSwap();
     setTimeout(draw, 1000/60);
 }
 
-function quadrantSwap() {
-    for (let i = 0; i < 8; i++) {
-        if (keys[i].x > 234 && keys[i].x < 336) {
+sequence();
+function sequence() {
+    if (sequenceNum === 0) {
+        diagonalSwap();
+    } else if (sequenceNum === 1) {
+        loop = 0;
+        bigRotation();
+    }
+    setTimeout(sequence, 1);
+}
+
+function diagonalSwap() {
+    if (keys.find(k => k.pos === 0).x > 234 && keys.find(k => k.pos === 0).x < 336) {
+        for (let i = 0; i < 8; i++) {
             if (keys[i].pos % 2 === 0) {
                 keys[i].x++;
             } else {
                 keys[i].x--;
             }
+            if (Math.floor(keys[i].pos / 2) % 2 === 0) {
+                keys[i].y++;
+            } else {
+                keys[i].y--;
+            }
         }
-        if (Math.floor(keys[i].pos / 2) % 2 === 0) {
-            keys[i].y++;
-        } else {
-            keys[i].y--;
+    } else {
+        for (let i = 0; i < 8; i++) {
+            if (keys[i].x <= 235) {
+                keys[i].x = 235;
+            } else {
+                keys[i].x = 335;
+            }
+            if (keys[i].pos % 4 === 0) {
+                keys[i].pos += 3;
+            } else if (keys[i].pos === 1 || keys[i].pos === 5) {
+                keys[i].pos++;
+            } else if (keys[i].pos === 2 || keys[i].pos === 6) {
+                keys[i].pos--;
+            } else {
+                keys[i].pos -= 3;
+            }
+        }
+        sequenceNum++;
+    }
+}
+
+function bigRotation() {
+    if (keys.find(k => k.pos === 0).x > 234 && keys.find(k => k.pos === 0).x < 336) {
+        for (let i = 0; i < 8; i++) {
+            if (keys[i].pos % 7 !== 0) {
+                if (keys[i].pos % 2) {
+                    keys[i].y++;
+                } else {
+                    keys[i].y--;
+                }
+            } else if (keys[i].pos === 0) {
+                keys[i].x++;
+            } else {
+                keys[i].x--;
+            }
+        }
+    } else {
+        for (let i = 0; i < 8; i++) {
+            if (keys[i].x <= 235) {
+                keys[i].x = 235;
+            } else {
+                keys[i].x = 335;
+            }
+            if (keys[i].pos === 0) {
+                keys[i].pos++;
+            } else if (keys[i].pos === 7) {
+                keys[i].pos--;
+            } else if (keys[i].pos % 2) {
+                keys[i].pos += 2;
+            } else {
+                keys[i].pos -= 2;
+            }
         }
     }
+}
+
+function smallRotation() {
+
 }
 
 function rotateAll() {
