@@ -36,9 +36,9 @@ window.addEventListener("load", draw)
 function draw() {
     ctx.fillRect(0, 0, cnv.width, cnv.height);
     for (let i = 0; i < 8; i++) {
-        ctx.drawImage(keyImg, keys[i].x, keys[i].y)
+        ctx.drawImage(keyImg, keys[i].x, keys[i].y, 64, 64)
         if (keyHighlight && keys[i].correct) {
-            ctx.drawImage(greenKey, keys[i].x, keys[i].y)
+            ctx.drawImage(greenKey, keys[i].x, keys[i].y, 64, 64)
         }
     }
     setTimeout(draw, 1);
@@ -217,7 +217,7 @@ function shuffle() {
             keys[i].x -= keySpeed;
         }
     }
-    if (keys.find(k => k.pos === 0).x >= 335) {
+    if (keys.find(k => k.pos === 2).x >= 335) {
         for (let i = 0; i < 8; i++) {
             if (keys[i].pos % 2 === 0 && keys[i].pos !== 0 || keys[i].pos == 7) {
                 keys[i].pos--;
@@ -238,7 +238,7 @@ function topSwap() {
             keys[i].y += keySpeed;
         }
     }
-    if (keys.find(k => k.pos === 0).x >= 335) {
+    if (keys.find(k => k.pos === 0).y >= 155) {
         for (let i = 0; i < 8; i++) {
             if (keys[i].pos === 6 || keys[i].pos === 7) {
                 keys[i].pos -= 6;
