@@ -5,35 +5,37 @@ cnv.width = 640;
 cnv.height = 480;
 const keyImg = document.getElementById("keyImg");
 const greenKey = document.getElementById("greenKey");
-let sequenceNum = 0;
 const keySpeed = 2;
-let loop = 0;
 let keyHighlight = true;
+let pickTime = false;
+let timer = 5;
+let pickStatus = 0;
+let restartable = false;
+let mouse = {
+    x: 0,
+    y: 0
+}
 class Key {
     constructor(x, y, pos) {
         this.x = x;
         this.y = y;
         this.pos = pos;
-        this.angle = 0;
         this.correct = false;
     }
 }
-// 0 1
-// 2 3
-// 4 5
-// 6 7
 let keys = [];
-for (let i = 0; i < 8; i++) {
-    keys[i] = new Key(235 + i % 2 * 100, 55 + Math.floor(i / 2) * 100, i)
-}
-randKey();
-function randKey() {
+initKeys();
+function initKeys() {
+    for (let i = 0; i < 8; i++) {
+        keys[i] = new Key(235 + i % 2 * 100, 55 + Math.floor(i / 2) * 100, i)
+    }
     let i = Math.floor(Math.random() * 7);
     keys[i].correct = true;
 }
 
 window.addEventListener("load", draw)
 function draw() {
+    ctx.fillStyle = "black";
     ctx.fillRect(0, 0, cnv.width, cnv.height);
     for (let i = 0; i < 8; i++) {
         ctx.drawImage(keyImg, keys[i].x, keys[i].y, 64, 64)
@@ -41,36 +43,88 @@ function draw() {
             ctx.drawImage(greenKey, keys[i].x, keys[i].y, 64, 64)
         }
     }
+    ctx.font = "30px Roboto";
+    ctx.textAlign = "center";
+    if (pickTime) {
+        ctx.fillStyle = "white";
+        ctx.fillText(timer, 320, 240);
+    }
+    if (timer === 0) {
+        ctx.fillStyle = "black";
+        ctx.fillRect(0, 0, cnv.width, cnv.height);
+        ctx.fillStyle = "white";
+        ctx.fillText("PICK A KEY COWARD", 320, 450);
+    }
+    if (pickStatus === 1) {
+        ctx.fillStyle = "rgb(200, 0, 0)";
+        ctx.fillRect(0, 0, cnv.width, cnv.height);
+    } else if (pickStatus === 2) {
+        ctx.fillStyle = "rgb(0, 200, 0)";
+        ctx.fillRect(0, 0, cnv.width, cnv.height);
+    }
+    if (restartable) {
+        ctx.fillStyle = "gray";
+        ctx.fillRect(240, 208, 160, 64);
+        ctx.fillStyle = "white";
+        ctx.fillText("RESTART", 320, 250)
+    }
     setTimeout(draw, 1);
 }
 
-flashKey();
-function flashKey() {
+function reset() {
+    keyHighlight = true;
+    pickTime = false;
+    timer = 5;
+    pickStatus = 0;
+    restartable = false;
+    initKeys();
+    start();
+}
+
+start();
+function start() {
     setTimeout(() => {
         keyHighlight = false;
-    }, 250)
+    }, 250);
     setTimeout(() => {
         keyHighlight = true;
-    }, 300)
+    }, 300);
     setTimeout(() => {
         keyHighlight = false;
-    }, 500)
+    }, 500);
     setTimeout(() => {
         keyHighlight = true;
-    }, 550)
+    }, 550);
     setTimeout(() => {
         keyHighlight = false;
-    }, 700)
+    }, 700);
     setTimeout(() => {
         for (let i = 0; i < 26; i++) {
             setTimeout(choose, i * (300));
         }
-    }, 1000)
+    }, 1000);
+    setTimeout(() => {
+        pickTime = true;
+    }, 8800);
+    setTimeout(() => {
+        timer--;
+    }, 9800);
+    setTimeout(() => {
+        timer--;
+    }, 10800);
+    setTimeout(() => {
+        timer--;
+    }, 11800);
+    setTimeout(() => {
+        timer--;
+    }, 12800);
+    setTimeout(() => {
+        restartable = true;
+    }, 13800);
 }
 
 function choose() {
     let randNum = Math.floor(Math.random() * 6);
-    sequenceNum++;
     for (let i = 0; i < 8; i++) {
         keys[i].x = 235 + keys[i].pos % 2 * 100;
         keys[i].y = 55 + Math.floor(keys[i].pos / 2) * 100;
@@ -249,6 +303,42 @@ function topSwap() {
     }
 }
 
-function rotateAll() {
+document.addEventListener("mousemove", mousemoveHandler);
+function mousemoveHandler(event) {
+    // Get rectangle info about canvas location
+    let cnvRect = cnv.getBoundingClientRect(); 
 
+    // Calc mouse coordinates using mouse event and canvas location info
+    mouse.x = Math.round(event.clientX - cnvRect.left);
+    mouse.y = Math.round(event.clientY - cnvRect.top);
+}
+
+document.addEventListener("click", pickKey)
+function pickKey() {
+    if (pickTime && timer) {
+        if (mouse.x >= keys.find(k => k.correct).x &&
+            mouse.x <= keys.find(k => k.correct).x + 64 &&
+            mouse.y >= keys.find(k => k.correct).y &&
+            mouse.y <= keys.find(k => k.correct).y + 64) {
+                pickTime = false;
+                pickStatus = 2;
+        } else {
+            for (let i = 0; i < 8; i++) {
+                if (mouse.x >= keys[i].x &&
+                    mouse.x <= keys[i].x + 64 &&
+                    mouse.y >= keys[i].y &&
+                    mouse.y <= keys[i].y + 64) {
+                        pickTime = false;
+                        pickStatus = 1;
+                }
+            }
+        }
+    }
+    if (restartable &&
+        mouse.x >= 240 &&
+        mouse.x <= 400 &&
+        mouse.y >= 208 &&
+        mouse.y <= 272) {
+        reset();
+    }
 }
