@@ -6,15 +6,16 @@ cnv.height = 480;
 const keyImg = document.getElementById("keyImg");
 const greenKey = document.getElementById("greenKey");
 const keySpeed = 2;
-let keyHighlight = true;
-let pickTime = false;
-let timer = 5;
-let pickStatus = 0;
-let restartable = false;
+let keyHighlight;
+let pickTime;
+let timer;
+let pickStatus;
+let restartable;
 let mouse = {
     x: 0,
     y: 0
 }
+let keys = [];
 class Key {
     constructor(x, y, pos) {
         this.x = x;
@@ -22,15 +23,6 @@ class Key {
         this.pos = pos;
         this.correct = false;
     }
-}
-let keys = [];
-initKeys();
-function initKeys() {
-    for (let i = 0; i < 8; i++) {
-        keys[i] = new Key(235 + i % 2 * 100, 55 + Math.floor(i / 2) * 100, i)
-    }
-    let i = Math.floor(Math.random() * 7);
-    keys[i].correct = true;
 }
 
 window.addEventListener("load", draw)
@@ -71,6 +63,7 @@ function draw() {
     setTimeout(draw, 1);
 }
 
+reset();
 function reset() {
     keyHighlight = true;
     pickTime = false;
@@ -81,7 +74,14 @@ function reset() {
     start();
 }
 
-start();
+function initKeys() {
+    for (let i = 0; i < 8; i++) {
+        keys[i] = new Key(235 + i % 2 * 100, 55 + Math.floor(i / 2) * 100, i)
+    }
+    let i = Math.floor(Math.random() * 7);
+    keys[i].correct = true;
+}
+
 function start() {
     setTimeout(() => {
         keyHighlight = false;
