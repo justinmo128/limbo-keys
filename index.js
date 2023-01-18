@@ -3,6 +3,8 @@ let cnv = document.getElementById("canvas");
 let ctx = cnv.getContext("2d");
 cnv.width = 640;
 cnv.height = 480;
+ctx.font = "30px Roboto";
+ctx.textAlign = "center";
 const keyImg = document.getElementById("keyImg");
 const greenKey = document.getElementById("greenKey");
 const keySpeed = 2;
@@ -16,6 +18,7 @@ let mouse = {
     y: 0
 }
 let keys = [];
+let firstTime = true;
 class Key {
     constructor(x, y, pos) {
         this.x = x;
@@ -29,42 +32,47 @@ window.addEventListener("load", draw)
 function draw() {
     ctx.fillStyle = "black";
     ctx.fillRect(0, 0, cnv.width, cnv.height);
-    for (let i = 0; i < 8; i++) {
-        ctx.drawImage(keyImg, keys[i].x, keys[i].y, 64, 64)
-        if (keyHighlight && keys[i].correct) {
-            ctx.drawImage(greenKey, keys[i].x, keys[i].y, 64, 64)
-        }
-    }
-    ctx.font = "30px Roboto";
-    ctx.textAlign = "center";
-    if (pickTime) {
-        ctx.fillStyle = "white";
-        ctx.fillText(timer, 320, 240);
-    }
-    if (timer === 0) {
-        ctx.fillStyle = "black";
-        ctx.fillRect(0, 0, cnv.width, cnv.height);
-        ctx.fillStyle = "white";
-        ctx.fillText("PICK A KEY COWARD", 320, 450);
-    }
-    if (pickStatus === 1) {
-        ctx.fillStyle = "rgb(200, 0, 0)";
-        ctx.fillRect(0, 0, cnv.width, cnv.height);
-    } else if (pickStatus === 2) {
-        ctx.fillStyle = "rgb(0, 200, 0)";
-        ctx.fillRect(0, 0, cnv.width, cnv.height);
-    }
-    if (restartable) {
+    if (firstTime) {
         ctx.fillStyle = "gray";
         ctx.fillRect(240, 208, 160, 64);
         ctx.fillStyle = "white";
-        ctx.fillText("RESTART", 320, 250)
+        ctx.fillText("START", 320, 250)
+    } else {
+        for (let i = 0; i < 8; i++) {
+            ctx.drawImage(keyImg, keys[i].x, keys[i].y, 64, 64)
+            if (keyHighlight && keys[i].correct) {
+                ctx.drawImage(greenKey, keys[i].x, keys[i].y, 64, 64)
+            }
+        }
+        if (pickTime) {
+            ctx.fillStyle = "white";
+            ctx.fillText(timer, 320, 240);
+        }
+        if (timer === 0) {
+            ctx.fillStyle = "black";
+            ctx.fillRect(0, 0, cnv.width, cnv.height);
+            ctx.fillStyle = "white";
+            ctx.fillText("PICK A KEY COWARD", 320, 450);
+        }
+        if (pickStatus === 1) {
+            ctx.fillStyle = "rgb(200, 0, 0)";
+            ctx.fillRect(0, 0, cnv.width, cnv.height);
+        } else if (pickStatus === 2) {
+            ctx.fillStyle = "rgb(0, 200, 0)";
+            ctx.fillRect(0, 0, cnv.width, cnv.height);
+        }
+        if (restartable) {
+            ctx.fillStyle = "gray";
+            ctx.fillRect(240, 208, 160, 64);
+            ctx.fillStyle = "white";
+            ctx.fillText("RESTART", 320, 250)
+        }
     }
     setTimeout(draw, 1);
 }
 
-reset();
 function reset() {
+    firstTime = false;
     keyHighlight = true;
     pickTime = false;
     timer = 5;
@@ -119,6 +127,7 @@ function start() {
         timer--;
     }, 12800);
     setTimeout(() => {
+        timer--;
         restartable = true;
     }, 13800);
 }
@@ -313,9 +322,15 @@ function mousemoveHandler(event) {
     mouse.y = Math.round(event.clientY - cnvRect.top);
 }
 
-document.addEventListener("click", pickKey)
-function pickKey() {
-    if (pickTime && timer) {
+document.addEventListener("click", clickHandler)
+function clickHandler() {
+    if (firstTime &&
+        mouse.x >= 240 &&
+        mouse.x <= 400 &&
+        mouse.y >= 208 &&
+        mouse.y <= 272) {
+            reset();
+    } else if (pickTime && timer) {
         if (mouse.x >= keys.find(k => k.correct).x &&
             mouse.x <= keys.find(k => k.correct).x + 64 &&
             mouse.y >= keys.find(k => k.correct).y &&
@@ -333,12 +348,11 @@ function pickKey() {
                 }
             }
         }
-    }
-    if (restartable &&
+    } else if (restartable &&
         mouse.x >= 240 &&
         mouse.x <= 400 &&
         mouse.y >= 208 &&
         mouse.y <= 272) {
-        reset();
+            reset();
     }
 }
