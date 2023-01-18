@@ -17,15 +17,13 @@ let mouse = {
     x: 0,
     y: 0
 }
-let keys = [];
+let keys = [{}, {}, {}, {}, {}, {}, {}, {}];
 let firstTime = true;
-class Key {
-    constructor(x, y, pos) {
-        this.x = x;
-        this.y = y;
-        this.pos = pos;
-        this.correct = false;
-    }
+for (let i = 0; i < 8; i++) {
+    keys[i].x = 235 + i % 2 * 100;
+    keys[i].y = 55 + Math.floor(i / 2) * 100;
+    keys[i].pos = i;
+    keys[i].correct = false;
 }
 
 window.addEventListener("load", draw)
@@ -84,7 +82,10 @@ function reset() {
 
 function initKeys() {
     for (let i = 0; i < 8; i++) {
-        keys[i] = new Key(235 + i % 2 * 100, 55 + Math.floor(i / 2) * 100, i)
+        keys[i].x = 235 + i % 2 * 100;
+        keys[i].y = 55 + Math.floor(i / 2) * 100;
+        keys[i].pos = i;
+        keys[i].correct = false;
     }
     let i = Math.floor(Math.random() * 7);
     keys[i].correct = true;
@@ -135,30 +136,49 @@ function start() {
 function choose() {
     let randNum = Math.floor(Math.random() * 6);
     for (let i = 0; i < 8; i++) {
+        let rightSide = 0;
+        if (keys[i].x >= 320) {
+            rightSide = 1;
+        }
+        if (keys[i].y < 137) {
+            keys[i].pos = 0 + rightSide;
+        } else if (keys[i].y < 237) {
+            keys[i].pos = 2 + rightSide;
+        } else if (keys[i].y < 337) {
+            keys[i].pos = 4 + rightSide;
+        } else {
+            keys[i].pos = 6 + rightSide;
+        }
         keys[i].x = 235 + keys[i].pos % 2 * 100;
         keys[i].y = 55 + Math.floor(keys[i].pos / 2) * 100;
     }
     if (randNum === 0) {
+        console.log("Diagonal Swap");
         for (let i = 0; i < 50; i++) {
             setTimeout(diagonalSwap, 6 * i);
         }
     } else if (randNum === 1) {
+        console.log("Big Rotation");
         for (let i = 0; i < 50; i++) {
             setTimeout(bigRotation, 6 * i);
         }
     } else if (randNum === 2) {
+        console.log("Small Rotation");
         for (let i = 0; i < 50; i++) {
             setTimeout(smallRotation, 6 * i);
         }
     } else if (randNum === 3) {
+        console.log("Swap");
         for (let i = 0; i < 50; i++) {
             setTimeout(swap, 6 * i);
         }
     } else if (randNum === 4) {
+        console.log("Shuffle");
         for (let i = 0; i < 50; i++) {
             setTimeout(shuffle, 6 * i);
         }
     } else {
+        console.log("Top Swap");
         for (let i = 0; i < 50; i++) {
             setTimeout(topSwap, 6 * i);
         }
@@ -178,19 +198,6 @@ function diagonalSwap() {
             keys[i].y -= keySpeed;
         }
     }
-    if (keys.find(k => k.pos === 0).x >= 335) {
-        for (let i = 0; i < 8; i++) {
-            if (keys[i].pos % 4 === 0) {
-                keys[i].pos += 3;
-            } else if (keys[i].pos === 1 || keys[i].pos === 5) {
-                keys[i].pos++;
-            } else if (keys[i].pos === 2 || keys[i].pos === 6) {
-                keys[i].pos--;
-            } else {
-                keys[i].pos -= 3;
-            }
-        }
-    }
 }
 
 function bigRotation() {
@@ -203,19 +210,6 @@ function bigRotation() {
             keys[i].y += keySpeed;
         } else {
             keys[i].y -= keySpeed;
-        }
-    }
-    if (keys.find(k => k.pos === 0).x >= 335) {
-        for (let i = 0; i < 8; i++) {
-            if (keys[i].pos === 0) {
-                keys[i].pos++;
-            } else if (keys[i].pos === 7) {
-                keys[i].pos--;
-            } else if (keys[i].pos % 2) {
-                keys[i].pos += 2;
-            } else {
-                keys[i].pos -= 2;
-            }
         }
     }
 }
@@ -232,19 +226,6 @@ function smallRotation() {
             keys[i].x -= keySpeed;
         }
     }
-    if (keys.find(k => k.pos === 0).x >= 335) {
-        for (let i = 0; i < 8; i++) {
-            if (keys[i].pos % 4 === 0) {
-                keys[i].pos++;
-            } else if (keys[i].pos % 4 === 1) {
-                keys[i].pos += 2;
-            } else if (keys[i].pos % 4 === 2) {
-                keys[i].pos -= 2;
-            } else {
-                keys[i].pos--;
-            }
-        }
-    }
 }
 
 function swap() {
@@ -253,15 +234,6 @@ function swap() {
             keys[i].x += keySpeed;
         } else {
             keys[i].x -= keySpeed;
-        }
-    }
-    if (keys.find(k => k.pos === 0).x >= 335) {
-        for (let i = 0; i < 8; i++) {
-            if (keys[i].pos % 2 === 0) {
-                keys[i].pos++;
-            } else {
-                keys[i].pos--;
-            }
         }
     }
 }
@@ -280,17 +252,6 @@ function shuffle() {
             keys[i].x -= keySpeed;
         }
     }
-    if (keys.find(k => k.pos === 2).x >= 335) {
-        for (let i = 0; i < 8; i++) {
-            if (keys[i].pos % 2 === 0 && keys[i].pos !== 0 || keys[i].pos == 7) {
-                keys[i].pos--;
-            } else if (keys[i].pos === 1 || keys[i].pos === 3) {
-                keys[i].pos++
-            } else if (keys[i].pos === 5) {
-                keys[i].pos += 2;
-            }
-        }
-    }
 }
 
 function topSwap() {
@@ -299,15 +260,6 @@ function topSwap() {
             keys[i].y -= keySpeed * 3;
         } else {
             keys[i].y += keySpeed;
-        }
-    }
-    if (keys.find(k => k.pos === 0).y >= 155) {
-        for (let i = 0; i < 8; i++) {
-            if (keys[i].pos === 6 || keys[i].pos === 7) {
-                keys[i].pos -= 6;
-            } else {
-                keys[i].pos += 2
-            }
         }
     }
 }
