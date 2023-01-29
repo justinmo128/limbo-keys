@@ -155,32 +155,32 @@ function choose() {
     if (randNum === 0) {
         console.log("Diagonal Swap");
         for (let i = 0; i < 50; i++) {
-            setTimeout(diagonalSwap, 5 * i);
+            setTimeout(diagonalSwap, 6 * i);
         }
     } else if (randNum === 1) {
         console.log("Big Rotation");
         for (let i = 0; i < 50; i++) {
-            setTimeout(bigRotation, 5 * i);
+            setTimeout(bigRotation, 6 * i);
         }
     } else if (randNum === 2) {
         console.log("Small Rotation");
         for (let i = 0; i < 50; i++) {
-            setTimeout(smallRotation, 5 * i);
+            setTimeout(smallRotation, 6 * i);
         }
     } else if (randNum === 3) {
         console.log("Swap");
         for (let i = 0; i < 50; i++) {
-            setTimeout(swap, 5 * i);
+            setTimeout(swap, 6 * i);
         }
     } else if (randNum === 4) {
         console.log("Shuffle");
         for (let i = 0; i < 50; i++) {
-            setTimeout(shuffle, 5 * i);
+            setTimeout(shuffle, 6 * i);
         }
     } else {
         console.log("Top Swap");
         for (let i = 0; i < 50; i++) {
-            setTimeout(topSwap, 5 * i);
+            setTimeout(topSwap, 6 * i);
         }
     }
 }
