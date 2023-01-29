@@ -109,7 +109,7 @@ function start() {
     }, 700);
     setTimeout(() => {
         for (let i = 0; i < 26; i++) {
-            setTimeout(choose, i * (300));
+            setTimeout(choose, i * (250));
         }
     }, 1000);
     setTimeout(() => {
